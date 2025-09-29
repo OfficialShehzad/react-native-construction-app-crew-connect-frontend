@@ -115,7 +115,7 @@ export default function HireEngineer({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      {/* <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
@@ -124,7 +124,7 @@ export default function HireEngineer({ route, navigation }) {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Hire Engineer</Text>
         <View style={styles.placeholder} />
-      </View>
+      </View> */}
 
       <View style={styles.projectInfo}>
         <Text style={styles.projectInfoTitle}>Project: {projectName}</Text>

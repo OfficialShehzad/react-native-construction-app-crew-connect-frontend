@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import Toast from "react-native-toast-message";
+import { Ionicons } from '@expo/vector-icons';
 import api from "../api/axios";
 
 export default function RegisterPage({ navigation }) {
+  const [showPassword, setShowPassword] = useState(false);
+
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -67,13 +70,34 @@ export default function RegisterPage({ navigation }) {
         value={form.email}
         onChangeText={(val) => handleChange("email", val)}
       />
-      <TextInput
+
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          style={styles.passwordField}
+          value={form.password}
+          onChangeText={(val) => handleChange("password", val)}
+        />
+        <TouchableOpacity
+          style={styles.passwordIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={22}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* <TextInput
         placeholder="Password"
         secureTextEntry
         style={styles.input}
         value={form.password}
         onChangeText={(val) => handleChange("password", val)}
-      />
+      /> */}
 
       {/* User Type */}
       <View style={styles.pickerContainer}>
@@ -144,6 +168,22 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     backgroundColor: "#ffffff",
     overflow: "hidden",
+  },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  passwordField: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+  passwordIcon: {
+    padding: 5,
   },
   picker: {
     height: 50,

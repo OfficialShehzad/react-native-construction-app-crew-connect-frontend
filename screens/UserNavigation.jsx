@@ -1,11 +1,38 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import UserProjects from './UserProjects';
 import UserProfile from './UserProfile';
 import HireEngineer from './HireEngineer';
+import ProjectDetails from './ProjectDetails';
+import ProjectForm from './ProjectForm';
 
 const Tab = createBottomTabNavigator();
+const ProjectStack = createStackNavigator();
+
+function ProjectsStackNavigator() {
+  return (
+    <ProjectStack.Navigator>
+      <ProjectStack.Screen
+        name="MyProjectsHome"
+        component={UserProjects}
+        options={{ title: 'My Projects', headerShown: false }}
+      />
+      <ProjectStack.Screen
+        name="ProjectDetails"
+        component={ProjectDetails}
+        options={{ title: 'Project Details' }}
+      />
+      <ProjectStack.Screen
+        name="ProjectForm"
+        component={ProjectForm}
+        options={{ title: 'Project' }}
+      />
+    </ProjectStack.Navigator>
+  );
+}
 
 export default function UserNavigation() {
   return (
@@ -21,11 +48,11 @@ export default function UserNavigation() {
     >
       <Tab.Screen
         name="MyProjects"
-        component={UserProjects}
+        component={ProjectsStackNavigator}
         options={{
           title: 'My Projects',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>📋</Text>
+            <Ionicons name="clipboard" size={size} color={color} />
           ),
         }}
       />
@@ -45,7 +72,7 @@ export default function UserNavigation() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>👤</Text>
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />

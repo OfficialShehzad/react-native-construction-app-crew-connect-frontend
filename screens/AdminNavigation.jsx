@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import AdminDashboard from './AdminDashboard';
 import AdminUsers from './AdminUsers';
 import AdminMaterials from './AdminMaterials';
@@ -26,7 +27,7 @@ export default function AdminNavigation() {
         options={{
           title: 'Dashboard',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>📊</Text>
+            <Ionicons name="speedometer" size={size} color={color} />
           ),
         }}
       />
@@ -36,7 +37,7 @@ export default function AdminNavigation() {
         options={{
           title: 'Users',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>👥</Text>
+            <Ionicons name="people" size={size} color={color} />
           ),
         }}
       />
@@ -46,7 +47,7 @@ export default function AdminNavigation() {
         options={{
           title: 'Materials',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>🧱</Text>
+            <Ionicons name="cube" size={size} color={color} />
           ),
         }}
       />
@@ -56,7 +57,7 @@ export default function AdminNavigation() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>👤</Text>
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />

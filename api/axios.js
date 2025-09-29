@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // For React Native development, use your computer's IP address instead of localhost
 // Replace this IP with your actual computer's IP address
 // You can find your IP by running 'ipconfig' in Windows Command Prompt
-const API_URL = process.env.API_BASE_URL || "http://10.184.244.166:5000";
+const API_URL = "http://10.55.5.166:5000";
 
 const api = axios.create({
   baseURL: `${API_URL}/api`, // all endpoints start with /api

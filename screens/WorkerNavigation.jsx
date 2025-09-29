@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import WorkerProjects from './WorkerProjects';
 import WorkerRequests from './WorkerRequests';
 import WorkerProfile from './WorkerProfile';
@@ -25,7 +26,7 @@ export default function WorkerNavigation() {
         options={{
           title: 'My Projects',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>🏗️</Text>
+            <Ionicons name="hammer" size={size} color={color} />
           ),
         }}
       />
@@ -35,7 +36,7 @@ export default function WorkerNavigation() {
         options={{
           title: 'Requests',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>📨</Text>
+            <Ionicons name="mail" size={size} color={color} />
           ),
         }}
       />
@@ -45,7 +46,7 @@ export default function WorkerNavigation() {
         options={{
           title: 'Profile',
           tabBarIcon: ({ color, size }) => (
-            <Text style={{ fontSize: size, color }}>👤</Text>
+            <Ionicons name="person" size={size} color={color} />
           ),
         }}
       />
