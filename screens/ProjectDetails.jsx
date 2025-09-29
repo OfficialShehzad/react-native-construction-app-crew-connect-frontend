@@ -98,6 +98,11 @@ export default function ProjectDetails({ route, navigation }) {
         <TouchableOpacity style={[styles.footerBtn, styles.editBtn]} onPress={() => navigation.navigate('ProjectForm', { mode: 'edit', project: currentProject, onSaved: handleEdited })}>
           <Text style={styles.footerBtnText}>Edit</Text>
         </TouchableOpacity>
+        {currentProject.status === 'planning' && (
+          <TouchableOpacity style={[styles.footerBtn, styles.hireBtn]} onPress={() => navigation.navigate('HireEngineer', { projectId: currentProject.id, projectName: currentProject.name })}>
+            <Text style={styles.footerBtnText}>Hire Worker</Text>
+          </TouchableOpacity>
+        )}
         <TouchableOpacity style={[styles.footerBtn, styles.deleteBtn]} onPress={confirmDelete}>
           <Text style={styles.footerBtnText}>Delete</Text>
         </TouchableOpacity>
@@ -203,6 +208,9 @@ const styles = StyleSheet.create({
   },
   editBtn: {
     backgroundColor: '#1e40af',
+  },
+  hireBtn: {
+    backgroundColor: '#10b981',
   },
   deleteBtn: {
     backgroundColor: '#ef4444',
