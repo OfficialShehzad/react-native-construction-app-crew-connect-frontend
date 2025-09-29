@@ -1,10 +1,25 @@
-import React, { useLayoutEffect, useState } from 'react';
+import React, { useLayoutEffect, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import api from '../api/axios';
 
 export default function ProjectDetails({ route, navigation }) {
   const { project } = route.params || {};
   const [currentProject, setCurrentProject] = useState(project);
+  const [milestones, setMilestones] = useState([]);
+
+  useEffect(() => {
+    fetchMilestones();
+  }, [])
+
+  const fetchMilestones = async () => {
+    try {
+      const response = await api.get(`/milestones/project/${currentProject.id}`);
+      console.log('project milestones : ', response.data);
+      setMilestones(response.data);
+    } catch (error) {
+      console.error('Error fetching project milestones:', error);
+    }
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -56,6 +71,24 @@ export default function ProjectDetails({ route, navigation }) {
     return new Date(dateString).toLocaleDateString();
   };
 
+  const getMilestoneColor = (status) => {
+    switch (status) {
+      case 'pending': return '#fbbf24';    // Yellow
+      case 'in_progress': return '#3b82f6'; // Blue
+      case 'completed': return '#10b981';  // Green
+      default: return '#6b7280';            // Gray
+    }
+  };
+
+  const getMilestoneStatusText = (status) => {
+    switch (status) {
+      case 'pending': return 'Pending';
+      case 'in_progress': return 'In Progress';
+      case 'completed': return 'Completed';
+      default: return status;
+    }
+  };
+
   if (!currentProject) {
     return (
       <View style={styles.centerContainer}>
@@ -92,6 +125,42 @@ export default function ProjectDetails({ route, navigation }) {
         <View style={styles.row}><Text style={styles.label}>Engineer</Text><Text style={styles.value}>{currentProject.civil_engineer_name || 'Not assigned'}</Text></View>
         <View style={styles.row}><Text style={styles.label}>Created</Text><Text style={styles.value}>{formatDate(currentProject.created_at)}</Text></View>
         <View style={styles.row}><Text style={styles.label}>Updated</Text><Text style={styles.value}>{formatDate(currentProject.updated_at)}</Text></View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Milestones</Text>
+        <View style={styles.timelineContainer}>
+          {milestones.length === 0 ? (
+            <Text style={styles.emptyMilestonesText}>No milestones set for this project</Text>
+          ) : (
+            milestones.map((milestone, index) => (
+              <View key={milestone.id} style={styles.timelineItem}>
+                <View style={styles.timelineItemContent}>
+                  <View style={styles.timelineLeft}>
+                    <Text style={styles.milestoneTitle}>{milestone.title}</Text>
+                    <Text style={styles.milestoneDate}>
+                      {formatDate(milestone.target_date)}
+                    </Text>
+                    {milestone.completion_date && (
+                      <Text style={styles.milestoneCompletedDate}>
+                        Completed: {formatDate(milestone.completion_date)}
+                      </Text>
+                    )}
+                  </View>
+                  <View style={styles.timelineCenter}>
+                    <View style={[styles.timelineCircle, { backgroundColor: getMilestoneColor(milestone.status) }]} />
+                    {index < milestones.length - 1 && <View style={styles.timelineLine} />}
+                  </View>
+                  <View style={styles.timelineRight}>
+                    <Text style={[styles.milestoneStatus, { color: getMilestoneColor(milestone.status) }]}>
+                      {getMilestoneStatusText(milestone.status)}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))
+          )}
+        </View>
       </View>
 
       <View style={styles.footerActions}>
@@ -219,6 +288,78 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '600',
   },
+  timelineContainer: {
+    marginTop: 8,
+  },
+  timelineItem: {
+    marginBottom: 16,
+  },
+  timelineItemContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  timelineLeft: {
+    flex: 1,
+    paddingRight: 16,
+    alignItems: 'flex-end',
+  },
+  timelineCenter: {
+    width: 20,
+    alignItems: 'center',
+    position: 'relative',
+  },
+  timelineCircle: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: '#fff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  timelineLine: {
+    position: 'absolute',
+    top: 16,
+    left: 9,
+    width: 2,
+    height: 48,
+    backgroundColor: '#e5e7eb',
+    zIndex: -1,
+  },
+  timelineRight: {
+    flex: 1,
+    paddingLeft: 16,
+    alignItems: 'flex-start',
+  },
+  milestoneTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 4,
+  },
+  milestoneDate: {
+    fontSize: 14,
+    color: '#6b7280',
+    marginBottom: 2,
+  },
+  milestoneCompletedDate: {
+    fontSize: 13,
+    color: '#10b981',
+    fontStyle: 'italic',
+  },
+  milestoneStatus: {
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  emptyMilestonesText: {
+    fontSize: 14,
+    color: '#9ca3af',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    paddingTop: 20,
+  },
 });
-
-

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import api, { setAuthToken } from "../api/axios"; // ✅ import the axios instance and setAuthToken
+import { Ionicons } from '@expo/vector-icons';
 
 export default function LoginPage({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState("user");
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!username || !password || !userType) {
@@ -49,7 +51,28 @@ export default function LoginPage({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
       <TextInput placeholder="Username" style={styles.input} value={username} onChangeText={setUsername} />
-      <TextInput placeholder="Password" style={styles.input} secureTextEntry value={password} onChangeText={setPassword} />
+
+      <View style={styles.passwordContainer}>
+        <TextInput
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          style={styles.passwordField}
+          value={password}
+          onChangeText={setPassword}
+        />
+        <TouchableOpacity
+          style={styles.passwordIcon}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={22}
+            color="gray"
+          />
+        </TouchableOpacity>
+      </View>
+
+      {/* <TextInput placeholder="Password" style={styles.input} secureTextEntry value={password} onChangeText={setPassword} /> */}
 
       <Text style={styles.label}>Login as:</Text>
       <View style={styles.pickerWrapper}>
@@ -75,4 +98,20 @@ const styles = StyleSheet.create({
   pickerWrapper: { borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginBottom: 15 },
   button: { backgroundColor: "#2c3e50", padding: 15, borderRadius: 8, alignItems: "center" },
   buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 15,
+  },
+  passwordField: {
+    flex: 1,
+    paddingVertical: 10,
+  },
+  passwordIcon: {
+    padding: 5,
+  },
 });

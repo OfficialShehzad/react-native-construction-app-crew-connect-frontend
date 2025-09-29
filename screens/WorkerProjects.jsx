@@ -14,12 +14,10 @@ import {
 } from 'react-native';
 import api from '../api/axios';
 
-export default function WorkerProjects() {
+export default function WorkerProjects({ navigation }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null);
   const [filter, setFilter] = useState('all'); // 'all', 'in_progress', 'completed'
 
   useEffect(() => {
@@ -45,9 +43,8 @@ export default function WorkerProjects() {
     setRefreshing(false);
   };
 
-  const openDetailModal = (project) => {
-    setSelectedProject(project);
-    setDetailModalVisible(true);
+  const openProjectDetails = (project) => {
+    navigation.navigate('WorkerProjectDetails', { project });
   };
 
   const getStatusColor = (status) => {
@@ -94,30 +91,38 @@ export default function WorkerProjects() {
   const renderProject = ({ item }) => (
     <TouchableOpacity
       style={styles.projectCard}
-      onPress={() => openDetailModal(item)}
+      onPress={() => openProjectDetails(item)}
     >
-      <View style={styles.projectHeader}>
-        <Text style={styles.projectName}>{item.name}</Text>
-        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
-          <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
+      {item.plan_image_url && (
+        <View style={styles.projectImageContainer}>
+          <Image source={{ uri: item.plan_image_url }} style={styles.projectImage} />
         </View>
-      </View>
+      )}
+      
+      <View style={styles.projectContent}>
+        <View style={styles.projectHeader}>
+          <Text style={styles.projectName}>{item.name}</Text>
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) }]}>
+            <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
+          </View>
+        </View>
 
-      <Text style={styles.projectDescription} numberOfLines={2}>
-        {item.description || 'No description provided'}
-      </Text>
-
-      <View style={styles.projectDetails}>
-        <Text style={styles.detailText}>Budget: ₹{item.budget}</Text>
-        <Text style={styles.detailText}>Role: {getProjectRole(item)}</Text>
-        <Text style={styles.detailText}>Client: {item.created_by_name}</Text>
-      </View>
-
-      <View style={styles.projectFooter}>
-        <Text style={styles.dateText}>
-          {formatDate(item.start_date)} - {formatDate(item.end_date)}
+        <Text style={styles.projectDescription} numberOfLines={2}>
+          {item.description || 'No description provided'}
         </Text>
-        <Text style={styles.roleText}>{getProjectRole(item)}</Text>
+
+        <View style={styles.projectDetails}>
+          <Text style={styles.detailText}>Budget: ₹{item.budget}</Text>
+          <Text style={styles.detailText}>Role: {getProjectRole(item)}</Text>
+          <Text style={styles.detailText}>Client: {item.created_by_name}</Text>
+        </View>
+
+        <View style={styles.projectFooter}>
+          <Text style={styles.dateText}>
+            {formatDate(item.start_date)} - {formatDate(item.end_date)}
+          </Text>
+          <Text style={styles.roleText}>{getProjectRole(item)}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -187,103 +192,6 @@ export default function WorkerProjects() {
         }
       />
 
-      {/* Project Detail Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={detailModalVisible}
-        onRequestClose={() => setDetailModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.detailModalContent}>
-            <ScrollView style={styles.detailScroll}>
-              {selectedProject && (
-                <>
-                  <View style={styles.detailHeader}>
-                    <Text style={styles.detailTitle}>{selectedProject.name}</Text>
-                    <View style={[styles.statusBadge, { backgroundColor: getStatusColor(selectedProject.status) }]}>
-                      <Text style={styles.statusText}>{getStatusText(selectedProject.status)}</Text>
-                    </View>
-                  </View>
-
-                  {/* Project Plan Image */}
-                  {selectedProject.plan_image_url && (
-                    <View style={styles.detailImageContainer}>
-                      <Text style={styles.imageLabel}>Project Plan</Text>
-                      <Image 
-                        source={{ uri: selectedProject.plan_image_url }} 
-                        style={styles.detailImage}
-                        resizeMode="cover"
-                      />
-                    </View>
-                  )}
-
-                  <View style={styles.detailSection}>
-                    <Text style={styles.detailSectionTitle}>Project Information</Text>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Description:</Text>
-                      <Text style={styles.detailInfoValue}>
-                        {selectedProject.description || 'No description provided'}
-                      </Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Budget:</Text>
-                      <Text style={styles.detailInfoValue}>₹{selectedProject.budget}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Your Role:</Text>
-                      <Text style={styles.detailInfoValue}>{getProjectRole(selectedProject)}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Client:</Text>
-                      <Text style={styles.detailInfoValue}>{selectedProject.created_by_name}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Start Date:</Text>
-                      <Text style={styles.detailInfoValue}>{formatDate(selectedProject.start_date)}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>End Date:</Text>
-                      <Text style={styles.detailInfoValue}>{formatDate(selectedProject.end_date)}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Project Created:</Text>
-                      <Text style={styles.detailInfoValue}>{formatDate(selectedProject.created_at)}</Text>
-                    </View>
-                    <View style={styles.detailInfo}>
-                      <Text style={styles.detailInfoLabel}>Last Updated:</Text>
-                      <Text style={styles.detailInfoValue}>{formatDate(selectedProject.updated_at)}</Text>
-                    </View>
-                  </View>
-
-                  {/* Project Progress Section */}
-                  <View style={styles.detailSection}>
-                    <Text style={styles.detailSectionTitle}>Project Status</Text>
-                    <View style={styles.statusContainer}>
-                      <View style={[styles.statusIndicator, { backgroundColor: getStatusColor(selectedProject.status) }]} />
-                      <Text style={styles.statusDescription}>
-                        {selectedProject.status === 'planning' && 'Project is in planning phase'}
-                        {selectedProject.status === 'in_progress' && 'Project is currently in progress'}
-                        {selectedProject.status === 'completed' && 'Project has been completed'}
-                        {selectedProject.status === 'cancelled' && 'Project has been cancelled'}
-                      </Text>
-                    </View>
-                  </View>
-                </>
-              )}
-            </ScrollView>
-
-            <View style={styles.detailActions}>
-              <TouchableOpacity
-                style={[styles.detailButton, styles.closeButton]}
-                onPress={() => setDetailModalVisible(false)}
-              >
-                <Text style={styles.detailButtonText}>Close</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -355,13 +263,25 @@ const styles = StyleSheet.create({
   projectCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 16,
     marginBottom: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+    overflow: 'hidden',
+  },
+  projectImageContainer: {
+    height: 160,
+    backgroundColor: '#f3f4f6',
+  },
+  projectImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  projectContent: {
+    padding: 16,
   },
   projectHeader: {
     flexDirection: 'row',

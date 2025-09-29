@@ -1,12 +1,38 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import WorkerProjects from './WorkerProjects';
+import WorkerProjectDetails from './WorkerProjectDetails';
+import ProjectMilestones from './ProjectMilestones';
 import WorkerRequests from './WorkerRequests';
 import WorkerProfile from './WorkerProfile';
 
 const Tab = createBottomTabNavigator();
+const ProjectStack = createStackNavigator();
+
+function ProjectsStackNavigator() {
+  return (
+    <ProjectStack.Navigator>
+      <ProjectStack.Screen
+        name="MyProjectsHome"
+        component={WorkerProjects}
+        options={{ title: 'My Projects', headerShown: false }}
+      />
+      <ProjectStack.Screen
+        name="WorkerProjectDetails"
+        component={WorkerProjectDetails}
+        options={{ title: 'Project Details' }}
+      />
+      <ProjectStack.Screen
+        name="ProjectMilestones"
+        component={ProjectMilestones}
+        options={{ title: 'Project Milestones' }}
+      />
+    </ProjectStack.Navigator>
+  );
+}
 
 export default function WorkerNavigation() {
   return (
@@ -22,7 +48,7 @@ export default function WorkerNavigation() {
     >
       <Tab.Screen
         name="MyProjects"
-        component={WorkerProjects}
+        component={ProjectsStackNavigator}
         options={{
           title: 'My Projects',
           tabBarIcon: ({ color, size }) => (
