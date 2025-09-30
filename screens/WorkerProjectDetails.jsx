@@ -109,7 +109,10 @@ export default function WorkerProjectDetails({ route, navigation }) {
           >
             <Text style={styles.managementButtonText}>Set Milestones</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.managementButton}>
+          <TouchableOpacity
+            style={styles.managementButton}
+            onPress={() => navigation.navigate('ProjectMaterials', { project: currentProject })}
+          >
             <Text style={styles.managementButtonText}>Get Materials</Text>
           </TouchableOpacity>
         </View>

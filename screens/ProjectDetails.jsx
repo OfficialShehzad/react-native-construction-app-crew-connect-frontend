@@ -6,10 +6,14 @@ export default function ProjectDetails({ route, navigation }) {
   const { project } = route.params || {};
   const [currentProject, setCurrentProject] = useState(project);
   const [milestones, setMilestones] = useState([]);
+  const [projectMaterials, setProjectMaterials] = useState([]);
 
   useEffect(() => {
-    fetchMilestones();
-  }, [])
+    if (currentProject?.id) {
+      fetchMilestones();
+      fetchProjectMaterials();
+    }
+  }, [currentProject?.id])
 
   const fetchMilestones = async () => {
     try {
@@ -18,6 +22,16 @@ export default function ProjectDetails({ route, navigation }) {
       setMilestones(response.data);
     } catch (error) {
       console.error('Error fetching project milestones:', error);
+    }
+  };
+
+  const fetchProjectMaterials = async () => {
+    try {
+      const response = await api.get(`/materials/project/${currentProject.id}`);
+      console.log('project materials : ', response.data);
+      setProjectMaterials(response.data);
+    } catch (error) {
+      console.error('Error fetching project materials:', error);
     }
   };
 
@@ -87,6 +101,10 @@ export default function ProjectDetails({ route, navigation }) {
       case 'completed': return 'Completed';
       default: return status;
     }
+  };
+
+  const calculateTotalMaterialsCost = () => {
+    return projectMaterials.reduce((total, material) => total + material.total_cost, 0);
   };
 
   if (!currentProject) {
@@ -161,6 +179,52 @@ export default function ProjectDetails({ route, navigation }) {
             ))
           )}
         </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Project Materials</Text>
+        {projectMaterials.length === 0 ? (
+          <Text style={styles.emptyMilestonesText}>No materials have been added to this project yet</Text>
+        ) : (
+          <>
+            {/* Table Header */}
+            <View style={styles.tableHeader}>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Material</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Qty</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Unit Price</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1 }]}>Total</Text>
+              <Text style={[styles.tableHeaderText, { flex: 1.5 }]}>Ordered By</Text>
+            </View>
+            {/* Table Rows */}
+            {projectMaterials.map((material) => (
+              <View key={material.id} style={styles.tableRow}>
+                <Text style={[styles.tableCell, { flex: 1 }]}>
+                  {material.name}
+                  {material.description && (
+                    <Text style={styles.materialDescriptionSmall}> ({material.category})</Text>
+                  )}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{material.quantity}</Text>
+                <Text style={[styles.tableCell, { flex: 1 }]}>₹{material.price_per_unit}</Text>
+                <Text style={[styles.tableCell, { flex: 1, fontWeight: '600' }]}>₹{material.total_cost.toLocaleString()}</Text>
+                <Text style={[styles.tableCell, { flex: 1.5 }]}>
+                  {material.ordered_by_name}
+                  {'\n'}
+                  <Text style={styles.tableCellSmall}>
+                    {formatDate(material.ordered_at)}
+                  </Text>
+                </Text>
+              </View>
+            ))}
+            {/* Total Row */}
+            <View style={styles.tableTotalRow}>
+              <Text style={[styles.tableTotalText, { flex: 5 }]}>Total Material Cost:</Text>
+              <Text style={[styles.tableTotalText, { flex: 2, color: '#1e40af', fontSize: 16 }]}>
+                ₹{calculateTotalMaterialsCost().toLocaleString()}
+              </Text>
+            </View>
+          </>
+        )}
       </View>
 
       <View style={styles.footerActions}>
@@ -361,5 +425,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     paddingTop: 20,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#f3f4f6',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 4,
+    overflow: 'scroll'
+  },
+  tableHeaderText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#374151',
+    textAlign: 'center',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  tableCell: {
+    fontSize: 13,
+    color: '#374151',
+    textAlign: 'center',
+  },
+  materialDescriptionSmall: {
+    fontSize: 11,
+    color: '#6b7280',
+    fontStyle: 'italic',
+  },
+  tableCellSmall: {
+    fontSize: 11,
+    color: '#6b7280',
+  },
+  tableTotalRow: {
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#eff6ff',
+    borderTopWidth: 2,
+    borderTopColor: '#1e40af',
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  tableTotalText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#1e40af',
   },
 });

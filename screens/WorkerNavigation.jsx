@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import WorkerProjects from './WorkerProjects';
 import WorkerProjectDetails from './WorkerProjectDetails';
 import ProjectMilestones from './ProjectMilestones';
+import ProjectMaterials from './ProjectMaterials';
 import WorkerRequests from './WorkerRequests';
 import WorkerProfile from './WorkerProfile';
 
@@ -29,6 +30,11 @@ function ProjectsStackNavigator() {
         name="ProjectMilestones"
         component={ProjectMilestones}
         options={{ title: 'Project Milestones' }}
+      />
+      <ProjectStack.Screen
+        name="ProjectMaterials"
+        component={ProjectMaterials}
+        options={{ title: 'Add Materials' }}
       />
     </ProjectStack.Navigator>
   );
