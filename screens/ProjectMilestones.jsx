@@ -89,6 +89,7 @@ export default function ProjectMilestones({ route, navigation }) {
         title: form.title.trim(),
         description: form.description.trim(),
         target_date: form.target_date,
+        ...(editingMilestone && { status: editingMilestone.status }),
       };
 
       if (editingMilestone) {
