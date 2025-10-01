@@ -4,10 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AdminDashboard from './AdminDashboard';
-import AdminPage from './AdminPage';
 import AdminMaterials from './AdminMaterials';
 import AdminProfile from './AdminProfile';
 import UserDetails from './UserDetails';
+import AdminUsers from './AdminUsers';
 
 const Tab = createBottomTabNavigator();
 const UserStack = createStackNavigator();
@@ -17,7 +17,7 @@ function UsersStackNavigator() {
     <UserStack.Navigator>
       <UserStack.Screen
         name="UsersHome"
-        component={AdminPage}
+        component={AdminUsers}
         options={{ title: 'Users', headerShown: false }}
       />
       <UserStack.Screen
