@@ -1,13 +1,33 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AdminDashboard from './AdminDashboard';
-import AdminUsers from './AdminUsers';
+import AdminPage from './AdminPage';
 import AdminMaterials from './AdminMaterials';
 import AdminProfile from './AdminProfile';
+import UserDetails from './UserDetails';
 
 const Tab = createBottomTabNavigator();
+const UserStack = createStackNavigator();
+
+function UsersStackNavigator() {
+  return (
+    <UserStack.Navigator>
+      <UserStack.Screen
+        name="UsersHome"
+        component={AdminPage}
+        options={{ title: 'Users', headerShown: false }}
+      />
+      <UserStack.Screen
+        name="UserDetails"
+        component={UserDetails}
+        options={{ title: 'User Details' }}
+      />
+    </UserStack.Navigator>
+  );
+}
 
 export default function AdminNavigation() {
   return (
@@ -33,7 +53,7 @@ export default function AdminNavigation() {
       />
       <Tab.Screen
         name="Users"
-        component={AdminUsers}
+        component={UsersStackNavigator}
         options={{
           title: 'Users',
           tabBarIcon: ({ color, size }) => (
