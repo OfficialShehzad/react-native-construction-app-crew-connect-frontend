@@ -9,6 +9,7 @@ import UserNavigation from "./screens/UserNavigation";
 import WorkerNavigation from "./screens/WorkerNavigation";
 import AdminNavigation from "./screens/AdminNavigation";
 import HireEngineer from './screens/HireEngineer';
+import HireWorkers from './screens/HireWorkers';
 import Toast, { ToastProvider } from "react-native-toast-message";
 
 
@@ -41,10 +42,15 @@ export default function App() {
             component={AdminNavigation}
             options={{ headerShown: false }}
           />
-          <Stack.Screen 
-  name="HireEngineer" 
+          <Stack.Screen
+  name="HireEngineer"
   component={HireEngineer}
   options={{ title: 'Hire Engineer' }}
+/>
+          <Stack.Screen
+  name="HireWorkers"
+  component={HireWorkers}
+  options={{ title: 'Hire Workers' }}
 />
         </Stack.Navigator>
       </NavigationContainer>

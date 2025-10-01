@@ -7,13 +7,25 @@ export default function ProjectDetails({ route, navigation }) {
   const [currentProject, setCurrentProject] = useState(project);
   const [milestones, setMilestones] = useState([]);
   const [projectMaterials, setProjectMaterials] = useState([]);
+  const [projectWorkers, setProjectWorkers] = useState([]);
 
   useEffect(() => {
     if (currentProject?.id) {
       fetchMilestones();
       fetchProjectMaterials();
+      fetchProjectWorkers();
     }
   }, [currentProject?.id])
+
+  const fetchProjectWorkers = async () => {
+    try {
+      const response = await api.get(`/workers/project/${currentProject.id}`);
+      console.log('project workers : ', response.data);
+      setProjectWorkers(response.data);
+    } catch (error) {
+      console.error('Error fetching project workers:', error);
+    }
+  };
 
   const fetchMilestones = async () => {
     try {
@@ -140,9 +152,20 @@ export default function ProjectDetails({ route, navigation }) {
         <View style={styles.row}><Text style={styles.label}>Budget</Text><Text style={styles.value}>₹{currentProject.budget}</Text></View>
         <View style={styles.row}><Text style={styles.label}>Start</Text><Text style={styles.value}>{formatDate(currentProject.start_date)}</Text></View>
         <View style={styles.row}><Text style={styles.label}>End</Text><Text style={styles.value}>{formatDate(currentProject.end_date)}</Text></View>
-        <View style={styles.row}><Text style={styles.label}>Engineer</Text><Text style={styles.value}>{currentProject.civil_engineer_name || 'Not assigned'}</Text></View>
+        {/* <View style={styles.row}><Text style={styles.label}>Engineer</Text><Text style={styles.value}>{currentProject.civil_engineer_name || 'Not assigned'}</Text></View> */}
         <View style={styles.row}><Text style={styles.label}>Created</Text><Text style={styles.value}>{formatDate(currentProject.created_at)}</Text></View>
-        <View style={styles.row}><Text style={styles.label}>Updated</Text><Text style={styles.value}>{formatDate(currentProject.updated_at)}</Text></View>
+        {/* <View style={styles.row}><Text style={styles.label}>Updated</Text><Text style={styles.value}>{formatDate(currentProject.updated_at)}</Text></View> */}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Workers</Text>
+        <View style={styles.row}><Text style={styles.label}>Engineer</Text><Text style={styles.value}>{currentProject.civil_engineer_name || 'Not assigned'}</Text></View>
+        {projectWorkers?.length === 0 ? null : projectWorkers?.filter(worker => worker.sub_user_type !== 'civil_engineer')?.map((worker, index) => (
+          <View style={styles.row} key={index}>
+            <Text style={styles.label}>{worker.sub_user_type}</Text>
+            <Text style={styles.value}>{worker.username || 'Not assigned'}</Text>
+          </View>
+        ))}
       </View>
 
       <View style={styles.section}>
