@@ -1,7 +1,29 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import api from '../api/axios';
 
 export default function WorkerProfile({ navigation }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  const fetchCurrentUser = async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/auth/me');
+      setUser(response.data);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+      Alert.alert('Error', 'Failed to fetch user details');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = () => {
     Alert.alert(
       'Logout',
@@ -16,6 +38,15 @@ export default function WorkerProfile({ navigation }) {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#1e40af" />
+        <Text style={styles.loadingText}>Loading profile...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -25,9 +56,48 @@ export default function WorkerProfile({ navigation }) {
       <View style={styles.content}>
         <View style={styles.profileSection}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>👷</Text>
+            <Ionicons name="person" size={20} color="#1e40af" />
           </View>
-          <Text style={styles.userType}>Worker Account</Text>
+          <Text style={styles.adminTitle}>Worker Account </Text>
+          <Text style={styles.adminName}>Hello, {user?.username || 'worker'}</Text>
+        </View>
+
+        <View style={styles.detailsSection}>
+          <View style={styles.detailItem}>
+            <Ionicons name="mail" size={20} color="#1e40af" />
+            <View style={styles.detailContent}>
+              <Text style={styles.detailLabel}>Email</Text>
+              <Text style={styles.detailValue}>{user?.email || 'Not available'}</Text>
+            </View>
+          </View>
+
+          <View style={styles.detailItem}>
+            <Ionicons name="shield-checkmark" size={20} color="#1e40af" />
+            <View style={styles.detailContent}>
+              <Text style={styles.detailLabel}>User Type</Text>
+              <Text style={styles.detailValue}>{user?.user_type || 'worker'}</Text>
+            </View>
+          </View>
+
+          {user?.sub_user_type && (
+            <View style={styles.detailItem}>
+              <Ionicons name="briefcase" size={20} color="#1e40af" />
+              <View style={styles.detailContent}>
+                <Text style={styles.detailLabel}>Specialization</Text>
+                <Text style={styles.detailValue}>{(user.sub_user_type.replace('_', ' '))}</Text>
+              </View>
+            </View>
+          )}
+
+          {/* <View style={styles.detailItem}>
+            <Ionicons name="calendar" size={20} color="#1e40af" />
+            <View style={styles.detailContent}>
+              <Text style={styles.detailLabel}>Member Since</Text>
+              <Text style={styles.detailValue}>
+                {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Unknown'}
+              </Text>
+            </View>
+          </View> */}
         </View>
 
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -73,7 +143,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 80,
     height: 80,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: '#dbeafe',
     borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
@@ -82,10 +152,60 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 40,
   },
-  userType: {
-    fontSize: 18,
+  adminTitle: {
+    fontSize: 16,
+    color: '#6b7280',
+    marginBottom: 4,
+  },
+  adminName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#1e40af',
+  },
+  detailsSection: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  detailItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  detailContent: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  detailLabel: {
+    fontSize: 12,
+    color: '#6b7280',
+    textTransform: 'uppercase',
     fontWeight: '600',
+    marginBottom: 2,
+    textTransform: 'capitalize',
+  },
+  detailValue: {
+    fontSize: 16,
     color: '#1f2937',
+    fontWeight: '500',
+    textTransform: 'capitalize',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#6b7280',
   },
   logoutButton: {
     backgroundColor: '#ef4444',
